@@ -4,10 +4,10 @@
             [com.walmartlabs.lacinia.pedestal :as lp]
             [io.pedestal.http :as http]
             [clojure.java.browse :refer [browse-url]]
+            [clojure-game-geek.system :as system]
+            [com.stuartsierra.component :as component]
             [clojure.walk :as walk])
   (:import [clojure.lang IPersistentMap]))
-
-(def schema (s/load-schema))
 
 (defn simplify
   "Converts all ordered maps nested within the map into standard hash maps, and
@@ -22,34 +22,23 @@
        :else node))
    m))
 
+(defonce system (system/new-system))
+
 (defn q
   [query-string]
-  (-> schema
+  (-> system
+      :schema-provider
+      :schema
       (lacinia/execute query-string nil nil)
       simplify))
 
-(defonce server nil)
-
-(defn start-server
-  [_]
-  (let [server (-> schema
-                   (lp/service-map {:graphiql true})
-                   http/create-server
-                   http/start)]
-    (browse-url "http://localhost:8888/")
-    server))
-
-(defn stop-server
-  [server]
-  (http/stop server)
-  nil)
-
 (defn start
   []
-  (alter-var-root #'server start-server)
+  (alter-var-root #'system component/start-system)
+  (browse-url "http://localhost:8888/")
   :started)
 
 (defn stop
   []
-  (alter-var-root #'server stop-server)
-  :stopped)
+  (alter-var-root #'system component/stop-system)
+    :stopped)
