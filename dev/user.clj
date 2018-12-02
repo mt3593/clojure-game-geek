@@ -28,6 +28,7 @@
   [query-string]
   (-> system
       :schema-provider
+      component/start
       :schema
       (lacinia/execute query-string nil nil)
       simplify))
