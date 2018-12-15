@@ -1,8 +1,7 @@
 (ns clojure-game-geek.db
-  (:require
-   [clojure.edn :as edn]
-   [clojure.java.io :as io]
-   [com.stuartsierra.component :as component]))
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [com.stuartsierra.component :as component]))
 
 (defrecord ClojureGameGeekDb [data]
 
